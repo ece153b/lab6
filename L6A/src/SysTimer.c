@@ -8,6 +8,7 @@
 
 #include "SysTimer.h"
 
+static volatile uint32_t msTicks;
 static uint32_t volatile step;
 
 void SysTick_Init(void) {
@@ -22,7 +23,7 @@ void SysTick_Init(void) {
 	// Select clock source
 	// If CLKSOURCE = 0, the external clock is used. The frequency of SysTick clock is the frequency of the AHB clock divided by 8.
 	// If CLKSOURCE = 1, the processor clock is used.
-	// TODO
+	SysTick->CTRL |= SysTick_CTRL_CLKSOURCE_Msk; //Double check this
 	
 	// Configure and Enable SysTick interrupt in NVIC
 	NVIC_EnableIRQ(SysTick_IRQn);
@@ -30,17 +31,27 @@ void SysTick_Init(void) {
 }
 
 void SysTick_Handler(void) {
-	//TODO
+	++msTicks;
 }
 
 void delay(uint32_t ms) {
-	//TODO
+	msTicks = 0; 						//Reset counter
+	SysTick->VAL = 0;				//Set SysTick value to 0
+	SysTick->LOAD = 79999; 	//Set SysTick load value (TODO - DOUBLE CHECK WHAT THIS VALUE SHOULD BE)
+	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;  //Enable SysTick
+	while(msTicks < ms){} 
+	SysTick->CTRL &= ~(SysTick_CTRL_ENABLE_Msk);  //Disable SysTick
 }
 
 void startTimer(void) {
-	//TODO
+	msTicks = 0; 						//Reset counter
+	SysTick->VAL = 0;				//Set SysTick value to 0
+	SysTick->LOAD = 79999; 	//Set SysTick load value (TODO - DOUBLE CHECK WHAT THIS VALUE SHOULD BE)
+	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;  //Enable SysTick
 }
 
 uint32_t endTimer(void) {
-	return 0;//TODO
+	SysTick->CTRL &= ~(SysTick_CTRL_ENABLE_Msk);  //Disable SysTick
+	//TODO - Double check how time is calculated
+	return msTicks + ((1/(8*10^7))*(SysTick->VAL));
 }

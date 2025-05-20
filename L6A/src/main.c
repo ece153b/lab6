@@ -24,15 +24,29 @@ int main(void) {
 	// Switch System Clock = 80 MHz
 	System_Clock_Init(); 
 	// TODO initialize modules
+	SysTick_Init(); 
+	LED_Init();
+	UART2_Init();
+	UART2_GPIO_Init(); 
 	
 	while(1) {
 		LED_Toggle();
-		// initialize CRC
+		// initialize CRC - TODO, check what this is
+		
 		// start timer
+		startTimer(); 
 		// compute CRC
+		uint32_t initialCRCValue = INITIAL_CRC_VALUE; 
+		for(int i = 0; i < BUFFER_SIZE; i++)
+		{
+			CrcSoftwareFunc(initialCRCValue, DataBuffer[i], POLYNOME); 
+		}
 		// end timer
-		// check CRC
+		uint32_t time = endTimer(); 
+		// check CRC TODO - figure out where expected values come from/what calculated value should be
 		// print time
+		printf("Time: %i", time); 
 		// delay
+		delay(1000); 
 	}
 }
