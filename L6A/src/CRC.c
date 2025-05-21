@@ -24,7 +24,7 @@ uint32_t CrcSoftwareFunc(uint32_t Initial_Crc, uint32_t Input_Data, uint32_t POL
 	Crc = Initial_Crc ^ Input_Data; 
 
   /* The CRC algorithm routine */
-	while(bindex < sizeof(Input_Data)*8)
+	do 
 	{
 		if((Crc & 1UL<<31) == 1UL<<31)
 		{
@@ -35,7 +35,7 @@ uint32_t CrcSoftwareFunc(uint32_t Initial_Crc, uint32_t Input_Data, uint32_t POL
 			Crc = (Crc<<1); 
 		}
 		bindex++; 
-	}
+	}while(bindex < sizeof(Input_Data)*8);
 	
   return Crc;
 }

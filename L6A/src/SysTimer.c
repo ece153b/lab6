@@ -8,7 +8,6 @@
 
 #include "SysTimer.h"
 
-static volatile uint32_t msTicks;
 static uint32_t volatile step;
 
 void SysTick_Init(void) {
@@ -31,27 +30,26 @@ void SysTick_Init(void) {
 }
 
 void SysTick_Handler(void) {
-	++msTicks;
+	++step;
 }
 
 void delay(uint32_t ms) {
-	msTicks = 0; 						//Reset counter
+	step = 0; 						//Reset counter
 	SysTick->VAL = 0;				//Set SysTick value to 0
 	SysTick->LOAD = 79999; 	//Set SysTick load value (TODO - DOUBLE CHECK WHAT THIS VALUE SHOULD BE)
 	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;  //Enable SysTick
-	while(msTicks < ms){} 
+	while(step < ms){} 
 	SysTick->CTRL &= ~(SysTick_CTRL_ENABLE_Msk);  //Disable SysTick
 }
 
 void startTimer(void) {
-	msTicks = 0; 						//Reset counter
+	step = 0; 						//Reset counter
 	SysTick->VAL = 0;				//Set SysTick value to 0
-	SysTick->LOAD = 79999; 	//Set SysTick load value (TODO - DOUBLE CHECK WHAT THIS VALUE SHOULD BE)
+	SysTick->LOAD = 7999; 	//Set SysTick load value (TODO - DOUBLE CHECK WHAT THIS VALUE SHOULD BE)
 	SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;  //Enable SysTick
 }
 
 uint32_t endTimer(void) {
 	SysTick->CTRL &= ~(SysTick_CTRL_ENABLE_Msk);  //Disable SysTick
-	//TODO - Double check how time is calculated
-	return msTicks + ((1/(8*10^7))*(SysTick->VAL));
+	return (step*100 + ((1/(8*10e7))*(SysTick->LOAD - SysTick->VAL)));
 }
