@@ -21,7 +21,8 @@ static volatile uint32_t ComputedCRC;
 static volatile uint32_t ComputationDone = 0;	
 
 void completeCRC(uint32_t crc){
-	//TODO
+	ComputedCRC = crc; 
+	ComputationDone = 1;
 }
 
 int main(void) {
