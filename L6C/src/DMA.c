@@ -39,7 +39,7 @@ void DMA_Init(void) {
 	//Set the data source to data buffer provided in CRC.h
 	DMA1_Channel6->CMAR = (uint32_t)DataBuffer; 
 	//Set the data destination to the data register of the CRC block
-	DMA1_Channel6->CPAR = CRC->DR; 
+	DMA1_Channel6->CPAR = (uint32_t)&(CRC->DR); 
 	//Disable half transfer interrupt
 	DMA1_Channel6->CCR &= ~(DMA_CCR_HTIE); 
 	//Disable transfer error interrupt
@@ -54,12 +54,12 @@ void DMA_Init(void) {
 
 void DMA1_Channel6_IRQHandler(void){ 
 	//Clear NVIC interrupt flag
-	//TODO - figure out what this means
+	//no such thing??
 	//Check Transfer Complete interrupt flag. If it occurs, clear the flag and mark computation as completed by calling computationComplete.
-	if((DMA1->ISR & DMA_ISR_TCIF6) == DMA_ISR_TCIF6)
+	if(DMA1->ISR & DMA_ISR_TCIF6)
 	{
 		DMA1->ISR &= ~(DMA_ISR_TCIF6); 
-		computationComplete(); //TODO - figure out what's supposed to be called here 
+		completeCRC(CRC->DR); 
 		//Clear global DMA interrupt flag
 		DMA1->IFCR |= DMA_IFCR_CGIF6; 
 	}
